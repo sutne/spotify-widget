@@ -89,14 +89,14 @@ def makeSVG(data):
 
     if data == {} or data["item"] == "None":
         contentBar = ""
-        currentStatus = "🎧 Recently vibed to "
+        currentStatus = "🎧  Recently vibed to "
         recentPlays = recentlyPlayed()
         recentPlaysLength = len(recentPlays["items"])
         itemIndex = random.randint(0, recentPlaysLength - 1)
         item = recentPlays["items"][itemIndex]["track"]
     else:
         item = data["item"]
-        currentStatus = "🎧 Vibing to"
+        currentStatus = "🎧  Vibing to"
     image = loadImageB64(item["album"]["images"][1]["url"])
     artistName = item["artists"][0]["name"].replace("&", "&amp;")
     songName = item["name"].replace("&", "&amp;")
