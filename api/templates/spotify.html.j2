@@ -1,15 +1,5 @@
 <svg width="480" height="173" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <foreignObject width="480" height="173">
-        <div class="currentStatus">{{status}}</div>
-	        <style>
-	            .currentStatus {
-	                    float: left;
-	                    font-size: 20px;
-	                    font-family: Collegiate;
-	                    position: static;
-	                    color: #8B94A5
-	                }
-	        </style>
         <div xmlns="http://www.w3.org/1999/xhtml" class="container">
             <style>
                 .main {
@@ -18,6 +8,18 @@
                 }
 
                 .container {
+                    overflow: hidden;
+                }
+
+	            .currentStatus {
+                    float: left;
+                    font-size: 20px;
+                    position: static;
+                    color: #8B94A5
+                }
+
+                .songcontainer {
+                    height: 133px;
                     border-radius: 10px;
                     background-color: #131313;
                     padding: 5px;
@@ -25,12 +27,12 @@
                 }
 
                 .art {
-                    width: 27%;
+                    width: 28%;
                     float: left;
                 }
 
                 .content {
-                    width: 71%;
+                    width: 69%;
                 }
 
                 .song {
@@ -45,24 +47,23 @@
 
                 .artist {
                     color: #b3b3b3;
-                    font-size: 20px;
+                    font-size: 18px;
                     margin-top: 4px;
                     text-align: center;
-                    margin-bottom: 5px;
                 }
 
                 .cover {
                     width: 100%;
                     height: 100%;
-                    border-radius: 5px;
+                    border-radius: 7px;
                 }
 
                 #bars {
                     width: 40px;
                     height: 30px;
-                    bottom: 23px;
+                    bottom: 53px;
                     position: absolute;
-                    margin: -20px 0 0 0px;
+                    margin: -20px 0 0 -20px;
                 }
 
                 .bar {
@@ -71,7 +72,7 @@
                     height: 3px;
                     position: absolute;
                     background: #21AF43;
-                    animation: sound 0ms -800ms linear infinite alternate;
+                    animation: sound 0ms -700ms linear infinite alternate;
                 }
                 
                 div {
@@ -85,7 +86,7 @@
                     }
 
                     100% {
-                        height: 23px;
+                        height: 25px;
                         opacity: 0.99;
                     }
                 }
@@ -94,19 +95,21 @@
             </style>
 
             <div class="main">
-                <a class="art" href="{}" target="_blank">
-                    <center>
-                        <img src="data:image/png;base64, {{image}}" class="cover" />
-                    </center>
-                </a>
+	            <div class="currentStatus">{{status}}</div>
+	            <div class="songcontainer">
+	                <a class="art" href="{}" target="_blank">
+	                    <center>
+	                        <img src="data:image/png;base64, {{image}}" class="cover" />
+	                    </center>
+	                </a>
 
-                <div class="content">
-                    <div class="song">{{songName}}</div>
-                    <div class="artist">{{artistName}}</div>
-                    <div id="bars">{{contentBar|safe}}</div>
-                </div>
+	                <div class="content">
+	                    <div class="song">{{songName}}</div>
+	                    <div class="artist">{{artistName}}</div>
+	                    <div id="bars">{{contentBar|safe}}</div>
+	                </div>
+	            </div>
             </div>
-
         </div>
     </foreignObject>
 </svg>
