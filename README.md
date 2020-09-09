@@ -1,1 +1,1 @@
-[![Spotify](https://novatorem.vercel.app/api/spotify)](https://open.spotify.com/user/omnitenebris)
+<img title="Go to my spotify" src="https://spotify-readme-sivertutne.vercel.app/api/spotify" alt="Nothing currently playing" width="512" />
