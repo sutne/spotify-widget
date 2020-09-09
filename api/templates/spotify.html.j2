@@ -1,31 +1,32 @@
 <svg width="480" height="173" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <foreignObject width="480" height="173">
+        <div class="currentStatus">{{status}}</div>
+	        <style>
+	            .currentStatus {
+	                    float: left;
+	                    font-size: 20px;
+	                    font-family: Collegiate;
+	                    position: static;
+	                    color: #8B94A5
+	                }
+	        </style>
         <div xmlns="http://www.w3.org/1999/xhtml" class="container">
             <style>
                 .main {
-                    margin-top: 40px;
+                    /*margin-top: 40px;*/
                     display: flex;
                 }
 
-                .currentStatus {
-                    float: left;
-                    font-size: 20px;
-                    position: static;
-                    margin-top: -5px;
-                    margin-left: 10px;
-                    color: #8B94A5
-                }
-                
                 .container {
                     border-radius: 10px;
                     background-color: #131313;
-                    padding: 10px 10px 10px 0px;
+                    padding: 5px;
+                    overflow: hidden;
                 }
 
                 .art {
                     width: 27%;
                     float: left;
-                    margin-left: -5px;
                 }
 
                 .content {
@@ -51,8 +52,8 @@
                 }
 
                 .cover {
-                    width: 100px;
-                    height: 100px;
+                    width: 100%;
+                    height: 100%;
                     border-radius: 5px;
                 }
 
@@ -91,8 +92,6 @@
 
                 {{barCSS|safe}}
             </style>
-
-            <div class="currentStatus">{{status}}</div>
 
             <div class="main">
                 <a class="art" href="{}" target="_blank">
