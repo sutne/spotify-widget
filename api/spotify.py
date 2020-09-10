@@ -34,7 +34,6 @@ def refreshToken():
 def recentlyPlayed():
     headers = {"Authorization": f"Bearer {refreshToken()}"}
     response = requests.get(RECENTLY_PLAYING_URL, headers=headers)
-
     if response.status_code == 204:
         return {}
     return response.json()
@@ -43,7 +42,6 @@ def recentlyPlayed():
 def nowPlaying():
     headers = {"Authorization": f"Bearer {refreshToken()}"}
     response = requests.get(NOW_PLAYING_URL, headers=headers)
-
     if response.status_code == 204:
         return {}
     return response.json()
@@ -51,44 +49,46 @@ def nowPlaying():
 
 def barGen(barCount):
     barCSS = ""
-    left = 1
-    for i in range(1, barCount + 1):
-        anim = random.randint(600, 1000)
+    startPixel = 1
+    for barNr in range(1, barCount + 1):
+        animationSpeed = random.randint(600, 1000)
         barCSS += (
             ".bar:nth-child({})  {{ left: {}px; animation-duration: {}ms; }}".format(
-                i, left, anim
+                barNr, startPixel, animationSpeed
             )
         )
-        left += 4
+        startPixel += 4
     return barCSS
 
 
 def loadImageB64(url):
-    resposne = requests.get(url)
-    return b64encode(resposne.content).decode("ascii")
+    return b64encode(requests.get(url).content).decode("ascii")
 
 
 def makeSVG(data):
-    barCount = 81
-    contentBar = "".join(["<div class='bar'></div>" for i in range(barCount)])
-    barCSS = barGen(barCount)
-
-    if data == {} or data["item"] == "None":
-        # No song is currently playing
-        contentBar = ""
+    currentlyPlaying = data != {} and data["item"] != "None"
+    if currentlyPlaying:
+        currentStatus = "🎧  Vibing to"
+        item = data["item"]
+        # Create the animated bars
+        barCount = 81
+        animatedBars = "".join(["<div class='bar'></div>" for i in range(barCount)])
+        barCSS = barGen(barCount)
+    else:
         currentStatus = "🎧  Recently vibed to"
+        # get random track from recently played
         recentPlays = recentlyPlayed()
         itemIndex = random.randint(0, len(recentPlays["items"]) - 1)
         item = recentPlays["items"][itemIndex]["track"]
-    else:
-        item = data["item"]
-        currentStatus = "🎧  Vibing to"
-    image = loadImageB64(item["album"]["images"][1]["url"])
-    artistName = item["artists"][0]["name"].replace("&", "&amp;")
+        animatedBars, barCSS = "", ""
+
+    # Get song, artist and coverimage
     songName = item["name"].replace("&", "&amp;")
+    artistName = item["artists"][0]["name"].replace("&", "&amp;")
+    image = loadImageB64(item["album"]["images"][1]["url"])
 
     dataDict = {
-        "contentBar": contentBar,
+        "animatedBars": animatedBars,
         "barCSS": barCSS,
         "artistName": artistName,
         "songName": songName,

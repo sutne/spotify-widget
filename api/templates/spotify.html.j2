@@ -1,7 +1,13 @@
-<svg width="480" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <foreignObject width="480" height="200">
+<svg width="528" height="197" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <foreignObject width="528" height="197">
         <div xmlns="http://www.w3.org/1999/xhtml" class="container">
             <style>
+                /* Setting font for all text */
+                div {
+                    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+                }
+
+                /* Text saying "Vibed to" or "Recently vibed to" */
 	            .currentStatus {
 	                display: block;
 	                position: static;
@@ -10,6 +16,7 @@
                     color: #a4acba;
                 }
 
+				/* container for song info */
                 .songcontainer {
                     display: flex;
                     padding: 5px;
@@ -18,11 +25,21 @@
                     background-color: #131313;
                 }
 
+				/* container for Cover-image */
                 .art {
                     float: left;
-                    width: 28%;
+                    width: 132px;
+                    height: 132px;
                 }
 
+                .cover {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 7px;
+                    border: 1px solid #21AF43;
+                }
+
+				/* container for songname and artist */
                 .content {
                     margin-left: 7px;
                     width: 69%;
@@ -30,29 +47,23 @@
 
 				/*TODO: Make overflowing text scroll?*/
                 .song {
-                    margin-top: 3px;
+                    margin-top: 25px;
                     text-align: center;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
-                    font-size: 24px;
+                    font-size: 26px;
                     color: #666;
                 }
 
                 .artist {
-                    color: #b3b3b3;
-                    font-size: 18px;
-                    margin-top: 4px;
                     text-align: center;
+                    margin-top: 4px;
+                    font-size: 14px;
+                    color: #b3b3b3;
                 }
 
-                .cover {
-                    width: 132px;
-                    height: 132px;
-                    border-radius: 7px;
-                    border: 1px solid black;
-                }
-
+				/* container for the animated bars */
                 #bars {
                     width: 325px;
                     height: 50px;
@@ -61,6 +72,7 @@
                     bottom: 25px;
                 }
 
+				/* a single animated bar */
                 .bar {
                     width: 3px;
                     bottom: 1px;
@@ -70,11 +82,8 @@
                     border-radius: 1px 1px 0px 0px;
                     animation: sound 0ms -800ms linear infinite alternate;
                 }
-                
-                div {
-                    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
-                }
-                
+
+                /* adjustment of animation at different points */
                 @keyframes sound {
                     0% {
                         height: 5px;
@@ -93,11 +102,11 @@
                         opacity: 0.60;
                     }
                     80% {
-                        height: 35px;
+                        height: 33px;
                         opacity: 0.85;
                     }
-                    90% {
-                        height: 37px;
+                    85% {
+                        height: 38px;
                         opacity: 0.95;
                     }
                     100% {
@@ -116,11 +125,10 @@
 	                        <img src="data:image/png;base64, {{image}}" class="cover" />
 	                    </center>
 	                </a>
-
 	                <div class="content">
 	                    <div class="song">{{songName}}</div>
 	                    <div class="artist">{{artistName}}</div>
-	                    <div id="bars">{{contentBar|safe}}</div>
+	                    <div id="bars">{{animatedBars|safe}}</div>
 	                </div>
 	            </div>
             </div>
