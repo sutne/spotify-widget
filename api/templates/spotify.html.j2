@@ -34,6 +34,7 @@
 
                 .content {
                     width: 69%;
+                    margin-left: 7px
                 }
 
                 .song {
@@ -61,11 +62,11 @@
                 }
 
                 #bars {
-                    width: 95%;
-                    height: 100%;
+                    width: 325px;
+                    height: 45px;
                     position: absolute;
                     left: 145px;
-                    bottom: 24px;
+                    bottom: 25px;
                 }
 
                 .bar {
@@ -74,6 +75,8 @@
                     height: 3px;
                     position: absolute;
                     background: #21AF43;
+                    border-bottom: solid 1px #21AF43;
+                    border-radius: 1px 1px 0px 0px;
                     animation: sound 0ms -800ms linear infinite alternate;
                 }
                 
@@ -84,10 +87,30 @@
                 @keyframes sound {
                     0% {
                         height: 5px;
-                        opacity: 0.20;
+                        opacity: 0.05;
+                    }
+                    10% {
+                        height: 5px;
+                        opacity: 0.3;
+                    }
+                    20% {
+                        height: 15px;
+                        opacity: 0.6;
+                    }
+                    50% {
+                        height: 25px;
+                        opacity: 0.6;
+                    }
+                    80% {
+                        height: 30px;
+                        opacity: 0.3;
+                    }
+                    95% {
+                        height: 35px;
+                        opacity: 0.3;
                     }
                     100% {
-                        height: 42px;
+                        height: 45px;
                         opacity: 0.99;
                     }
                 }
