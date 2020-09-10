@@ -1,34 +1,24 @@
 import os
-import json
 import random
 import requests
-
 from base64 import b64encode
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, Response, jsonify, render_template
+from flask import Flask, Response, render_template
 
 load_dotenv(find_dotenv())
 
-# Spotify scopes:
-#   user-read-currently-playing
-#   user-read-recently-played
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_SECRET_ID = os.getenv("SPOTIFY_SECRET_ID")
 SPOTIFY_REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN")
-
 REFRESH_TOKEN_URL = "https://accounts.spotify.com/api/token"
 NOW_PLAYING_URL = "https://api.spotify.com/v1/me/player/currently-playing"
-RECENTLY_PLAYING_URL = (
-    "https://api.spotify.com/v1/me/player/recently-played?limit=10"
-)
+RECENTLY_PLAYING_URL = "https://api.spotify.com/v1/me/player/recently-played?limit=10"
 
 app = Flask(__name__)
 
 
 def getAuth():
-    return b64encode(f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_SECRET_ID}".encode()).decode(
-        "ascii"
-    )
+    return b64encode(f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_SECRET_ID}".encode()).decode("ascii")
 
 
 def refreshToken():
@@ -36,16 +26,13 @@ def refreshToken():
         "grant_type": "refresh_token",
         "refresh_token": SPOTIFY_REFRESH_TOKEN,
     }
-
     headers = {"Authorization": "Basic {}".format(getAuth())}
-
     response = requests.post(REFRESH_TOKEN_URL, data=data, headers=headers)
     return response.json()["access_token"]
 
 
 def recentlyPlayed():
-    token = refreshToken()
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer {refreshToken()}"}
     response = requests.get(RECENTLY_PLAYING_URL, headers=headers)
 
     if response.status_code == 204:
@@ -54,8 +41,7 @@ def recentlyPlayed():
 
 
 def nowPlaying():
-    token = refreshToken()
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer {refreshToken()}"}
     response = requests.get(NOW_PLAYING_URL, headers=headers)
 
     if response.status_code == 204:
@@ -88,11 +74,11 @@ def makeSVG(data):
     barCSS = barGen(barCount)
 
     if data == {} or data["item"] == "None":
+        # No song is currently playing
         contentBar = ""
-        currentStatus = "🎧  Recently vibed to "
+        currentStatus = "🎧  Recently vibed to"
         recentPlays = recentlyPlayed()
-        recentPlaysLength = len(recentPlays["items"])
-        itemIndex = random.randint(0, recentPlaysLength - 1)
+        itemIndex = random.randint(0, len(recentPlays["items"]) - 1)
         item = recentPlays["items"][itemIndex]["track"]
     else:
         item = data["item"]
@@ -109,7 +95,6 @@ def makeSVG(data):
         "image": image,
         "status": currentStatus,
     }
-
     return render_template("spotify.html.j2", **dataDict)
 
 
@@ -118,10 +103,8 @@ def makeSVG(data):
 def catch_all(path):
     data = nowPlaying()
     svg = makeSVG(data)
-
     resp = Response(svg, mimetype="image/svg+xml")
     resp.headers["Cache-Control"] = "s-maxage=1"
-
     return resp
 
 
