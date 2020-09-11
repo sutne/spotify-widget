@@ -1,5 +1,5 @@
-<svg width="500" height="173" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <foreignObject width="500" height="173">
+<svg width="508" height="173" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <foreignObject width="508" height="173">
         <div xmlns="http://www.w3.org/1999/xhtml" class="container">
             <style>
                 /* Setting font for all text */
@@ -20,7 +20,7 @@
                 .songcontainer {
                     display: flex;
                     height: 139px;
-                    width: 500px;
+                    width: 508px;
                     border-radius: 10px;
                     background-color: #131313;
                 }
@@ -48,6 +48,7 @@
 
 				/*TODO: Make overflowing text scroll?*/
                 .song {
+                    padding: 0 27px 0 27px;
                     margin-top: 25px;
                     text-align: center;
                     white-space: nowrap;
@@ -73,39 +74,18 @@
                                                                             /* Animated Bars */
 				/* highfrequencises */
                 .highBar {
-                    position: absolute;
-                    width: 3px;
-                    bottom: 1px;
-                    height: 15px;
-                    background: #21AF43;
-                    border-radius: 1px 1px 0px 0px;
+                    {{barLayout}}
                     animation: highsound 0ms -800ms linear infinite alternate;
                 }
                 /* adjustment of animation at different points */
                 @keyframes highsound {
                     0% {
-                        height: 5px;
+                        height: 10px;
                         opacity: 0.25;
-                    }
-                    10% {
-                        height: 5px;
-                        opacity: 0.40;
-                    }
-                    20% {
-                        height: 15px;
-                        opacity: 0.50;
-                    }
-                    50% {
-                        height: 25px;
-                        opacity: 0.60;
-                    }
-                    80% {
-                        height: 33px;
-                        opacity: 0.85;
                     }
                     85% {
                         height: 38px;
-                        opacity: 0.95;
+                        opacity: 0.30;
                     }
                     100% {
                         height: 45px;
@@ -115,36 +95,25 @@
 
                 /* mediumfrequencises */
                 .mediumBar {
-                    width: 3px;
-                    height: 3px;
-                    background: #21AF43;
-                    border-radius: 1px 1px 0px 0px;
-                    "animation: mediumsound 0ms -800ms linear infinite alternate;"
+                    {{barLayout}}
+                    animation: mediumsound 0ms -800ms linear infinite alternate;
                 }
                 @keyframes mediumsound {
                     0% {
-                        height: 5px;
-                        opacity: 0.25;
-                    }
-                    10% {
-                        height: 5px;
-                        opacity: 0.40;
+                        height: 20px;
+                        opacity: 0.35;
                     }
                     20% {
-                        height: 15px;
-                        opacity: 0.50;
+                        height: 32px;
+                        opacity: 0.45;
                     }
-                    50% {
-                        height: 25px;
-                        opacity: 0.60;
+                    40% {
+                        height: 15px;
+                        opacity: 0.35;
                     }
                     80% {
-                        height: 33px;
-                        opacity: 0.85;
-                    }
-                    85% {
-                        height: 38px;
-                        opacity: 0.95;
+                        height: 30px;
+                        opacity: 0.75;
                     }
                     100% {
                         height: 45px;
@@ -153,41 +122,30 @@
                 }
 
                 /* Base */
-                .highBar {
-                    width: 3px;
-                    height: 3px;
-                    background: #21AF43;
-                    border-radius: 1px 1px 0px 0px;
-                    "animation: basesound 0ms -800ms linear infinite alternate;"
+                .baseBar {
+                    {{barLayout}}
+                    animation: basesound 0ms -800ms linear infinite alternate;
                 }
                 @keyframes basesound {
                     0% {
-                        height: 5px;
-                        opacity: 0.25;
-                    }
-                    10% {
                         height: 15px;
-                        opacity: 0.40;
+                        opacity: 0.35;
                     }
                     20% {
-                        height: 5px;
-                        opacity: 0.25;
+                        height: 7px;
+                        opacity: 0.50;
                     }
-                    50% {
-                        height: 25px;
-                        opacity: 0.60;
-                    }
-                    70% {
-                        height: 33px;
-                        opacity: 0.85;
+                    40% {
+                        height: 10px;
+                        opacity: 0.35;
                     }
                     80% {
-                        height: 38px;
-                        opacity: 0.95;
+                        height: 8px;
+                        opacity: 0.50;
                     }
                     100% {
-                        height: 45px;
-                        opacity: 0.99;
+                        height: 40px;
+                        opacity: 0.55;
                     }
                 }
                 {{barCSS|safe}}
