@@ -31,14 +31,6 @@ def refreshToken():
     return response.json()["access_token"]
 
 
-def recentlyPlayed():
-    headers = {"Authorization": f"Bearer {refreshToken()}"}
-    response = requests.get(RECENTLY_PLAYING_URL, headers=headers)
-    if response.status_code == 204:
-        return {}
-    return response.json()
-
-
 def nowPlaying():
     headers = {"Authorization": f"Bearer {refreshToken()}"}
     response = requests.get(NOW_PLAYING_URL, headers=headers)
@@ -47,18 +39,57 @@ def nowPlaying():
     return response.json()
 
 
-def barGen(barCount):
-    barCSS = ""
-    startPixel = 1
-    for barNr in range(1, barCount + 1):
-        animationSpeed = random.randint(600, 1000)
-        barCSS += (
-            ".bar:nth-child({})  {{ left: {}px; animation-duration: {}ms; }}".format(
-                barNr, startPixel, animationSpeed
-            )
-        )
+def recentlyPlayed():
+    headers = {"Authorization": f"Bearer {refreshToken()}"}
+    response = requests.get(RECENTLY_PLAYING_URL, headers=headers)
+    if response.status_code == 204:
+        return {}
+    return response.json()
+
+
+def addBar(barNr, startPixel, bartype, lowSpeed, highSpeed, ):
+    bar = "<div class='" + bartype + "Bar'></div>"
+    animationSpeed = random.randint(lowSpeed, highSpeed)
+    barCSS = (
+            "." + bartype + "Bar:nth-child({})  {{ left: {}px; animation-duration: {}ms; }}"
+            .format(barNr, startPixel, animationSpeed)
+    )
+    return bar, barCSS
+
+
+def getRandomBarType(barNr):
+    # Distribtes base frequencies to the right, and high frequensies to the left.
+    if barNr < 15:
+        bartype = random.randint(0, 1)
+    elif barNr < 75:
+        bartype = random.randint(0, 2)
+    else:
+        bartype = random.randint(1, 2)
+    return bartype
+
+
+def generateBars():
+    barCount, startPixel = 90, 1  # barCount has to be a multiple of 3
+    bars, barsCSS = "", ""
+
+    barLayout = "position: absolute;" \
+                "width: 4px;" \
+                "bottom: 1px;" \
+                "height: 15px;" \
+                "background: #21AF43;" \
+                "border-radius: 1px 1px 0px 0px;"
+    bartypes = [("high", 500, 1000),
+                ("medium", 650, 810),
+                ("base", 349, 351)]
+
+    for i in range(1, barCount):
+        bartype = getRandomBarType(i)
+        newBar, newBarCSS = addBar(i, startPixel, bartypes[bartype][0], bartypes[bartype][1], bartypes[bartype][2])
+        bars += newBar
+        barsCSS += newBarCSS
         startPixel += 4
-    return barCSS
+
+    return barsCSS, barLayout, bars
 
 
 def loadImageB64(url):
@@ -66,34 +97,33 @@ def loadImageB64(url):
 
 
 def makeSVG(data):
-    currentlyPlaying = data != {} and data["item"] != "None"
+    currentlyPlaying = data != {} and data["item"] != "None" and (data["item"]["is_local"] is False)
     if currentlyPlaying:
         currentStatus = "🎧  Vibing to"
         item = data["item"]
         # Create the animated bars
-        barCount = 81
-        animatedBars = "".join(["<div class='bar'></div>" for i in range(barCount)])
-        barCSS = barGen(barCount)
+        barCSS, barLayout, animatedBars = generateBars()
     else:
         currentStatus = "🎧  Recently vibed to"
-        # get random track from recently played
-        recentPlays = recentlyPlayed()
-        itemIndex = random.randint(0, len(recentPlays["items"]) - 1)
-        item = recentPlays["items"][itemIndex]["track"]
-        animatedBars, barCSS = "", ""
+        # get random track from recently played, filter away local tracks
+        recentPlays = [item for item in recentlyPlayed()["items"] if item["track"]["is_local"] is not True]
+        itemIndex = random.randint(0, len(recentPlays) - 1)
+        item = recentPlays[itemIndex]["track"]
+        animatedBars, barLayout, barCSS = "", "", ""
 
-    # Get song, artist and coverimage
-    songName = item["name"].replace("&", "&amp;")
-    artistName = item["artists"][0]["name"].replace("&", "&amp;")
-    image = loadImageB64(item["album"]["images"][1]["url"])
-
+    # Data that is sent to html
     dataDict = {
-        "animatedBars": animatedBars,
-        "barCSS": barCSS,
-        "artistName": artistName,
-        "songName": songName,
-        "image": image,
         "status": currentStatus,
+        "image": loadImageB64(item["album"]["images"][1]["url"]),
+        "songName": item["name"].replace("&", "&amp;"),
+        "artistName": item["artists"][0]["name"].replace("&", "&amp;"),
+        "explicit": item["explicit"],
+        # "previewLink": item["preview_url"],
+        "trackLink": item["external_urls"]["spotify"],
+        # "popularity": item["popularity"],
+        "animatedBars": animatedBars,
+        "barLayout": barLayout,
+        "barCSS": barCSS,
     }
     return render_template("spotify.html.j2", **dataDict)
 
