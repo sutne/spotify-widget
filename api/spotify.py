@@ -2,23 +2,22 @@ import os
 import random
 import requests
 from base64 import b64encode
-from dotenv import load_dotenv, find_dotenv
 from flask import Flask, Response, render_template
+from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
+SPOTIFY_CLIENT_ID = os.environ.get("SPOTIFY_CLIENT_ID")
+SPOTIFY_CLIENT_SECRET = os.environ.get("SPOTIFY_CLIENT_SECRET")
+SPOTIFY_REFRESH_TOKEN = os.environ.get("SPOTIFY_REFRESH_TOKEN")
 
-SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
-SPOTIFY_SECRET_ID = os.getenv("SPOTIFY_SECRET_ID")
-SPOTIFY_REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN")
 REFRESH_TOKEN_URL = "https://accounts.spotify.com/api/token"
 NOW_PLAYING_URL = "https://api.spotify.com/v1/me/player/currently-playing"
 RECENTLY_PLAYING_URL = "https://api.spotify.com/v1/me/player/recently-played?limit=10"
 
-app = Flask(__name__)
-
 
 def getAuth():
-    return b64encode(f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_SECRET_ID}".encode()).decode("ascii")
+    combination = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}".encode("ascii")
+    return b64encode(combination).decode("ascii")
 
 
 def refreshToken():
@@ -47,12 +46,21 @@ def recentlyPlayed():
     return response.json()
 
 
-def addBar(barNr, startPixel, bartype, lowSpeed, highSpeed, ):
+def addBar(
+    barNr,
+    startPixel,
+    bartype,
+    lowSpeed,
+    highSpeed,
+):
     bar = "<div class='" + bartype + "Bar'></div>"
     animationSpeed = random.randint(lowSpeed, highSpeed)
     barCSS = (
-            "." + bartype + "Bar:nth-child({})  {{ left: {}px; animation-duration: {}ms; }}"
-            .format(barNr, startPixel, animationSpeed)
+        "."
+        + bartype
+        + "Bar:nth-child({})  {{ left: {}px; animation-duration: {}ms; }}".format(
+            barNr, startPixel, animationSpeed
+        )
     )
     return bar, barCSS
 
@@ -72,19 +80,25 @@ def generateBars():
     barCount, startPixel = 90, 1  # barCount has to be a multiple of 3
     bars, barsCSS = "", ""
 
-    barLayout = "position: absolute;" \
-                "width: 4px;" \
-                "bottom: 1px;" \
-                "height: 15px;" \
-                "background: #21AF43;" \
-                "border-radius: 1px 1px 0px 0px;"
-    bartypes = [("high", 500, 1000),
-                ("medium", 650, 810),
-                ("base", 349, 351)]
+    barLayout = (
+        "position: absolute;"
+        "width: 4px;"
+        "bottom: 1px;"
+        "height: 15px;"
+        "background: #21AF43;"
+        "border-radius: 1px 1px 0px 0px;"
+    )
+    bartypes = [("high", 500, 1000), ("medium", 650, 810), ("base", 349, 351)]
 
     for i in range(1, barCount):
         bartype = getRandomBarType(i)
-        newBar, newBarCSS = addBar(i, startPixel, bartypes[bartype][0], bartypes[bartype][1], bartypes[bartype][2])
+        newBar, newBarCSS = addBar(
+            i,
+            startPixel,
+            bartypes[bartype][0],
+            bartypes[bartype][1],
+            bartypes[bartype][2],
+        )
         bars += newBar
         barsCSS += newBarCSS
         startPixel += 4
@@ -97,7 +111,9 @@ def loadImageB64(url):
 
 
 def makeSVG(data):
-    currentlyPlaying = data != {} and data["item"] != "None" and (data["item"]["is_local"] is False)
+    currentlyPlaying = (
+        data != {} and data["item"] != "None" and (data["item"]["is_local"] is False)
+    )
     if currentlyPlaying:
         currentStatus = "🎧  Vibing to"
         item = data["item"]
@@ -106,7 +122,11 @@ def makeSVG(data):
     else:
         currentStatus = "🎧  Recently vibed to"
         # get random track from recently played, filter away local tracks
-        recentPlays = [item for item in recentlyPlayed()["items"] if item["track"]["is_local"] is not True]
+        recentPlays = [
+            item
+            for item in recentlyPlayed()["items"]
+            if item["track"]["is_local"] is not True
+        ]
         itemIndex = random.randint(0, len(recentPlays) - 1)
         item = recentPlays[itemIndex]["track"]
         animatedBars, barLayout, barCSS = "", "", ""
@@ -126,6 +146,9 @@ def makeSVG(data):
         "barCSS": barCSS,
     }
     return render_template("spotify.html.j2", **dataDict)
+
+
+app = Flask(__name__)
 
 
 @app.route("/", defaults={"path": ""})

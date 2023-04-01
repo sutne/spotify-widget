@@ -6,4 +6,16 @@ This was little project i came across when i realised i could have a readme for 
 
 [![Spotify](https://novatorem.vercel.app/api/spotify)](https://open.spotify.com/user/omnitenebris)
 
+## Setup
 
+Go to [Spotify for Developers](https://developer.spotify.com/dashboard/applications) and place the following information in a `.env` file in the root of the project:
+```sh
+SPOTIFY_CLIENT_ID=
+SPOTIFY_CLIENT_SECRET=
+SPOTIFY_REDIRECT_URI=
+```
+
+Run the script `get_refresh_token.py` and add it to your `.env` file:
+```sh
+SPOTIFY_REFRESH_TOKEN=
+```
