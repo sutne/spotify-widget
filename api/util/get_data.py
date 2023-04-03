@@ -3,7 +3,7 @@ import requests
 import random
 from dotenv import load_dotenv, find_dotenv
 
-from src.util import B64_string
+from .util import B64_string
 
 load_dotenv(find_dotenv())
 SPOTIFY_CLIENT_ID = os.environ.get("SPOTIFY_CLIENT_ID")
@@ -30,22 +30,27 @@ def refreshToken():
     return response.json()["access_token"]
 
 
-def getNowPlayingSong() -> dict | None:
+def getCurrentTrack() -> dict | None:
     response = requests.get(
         NOW_PLAYING_URL,
         headers={"Authorization": f"Bearer {refreshToken()}"},
     )
-    if response.status_code == 204:
+
+    if not response:
+        return None
+    if response.status_code != 200:
         return None
     now_playing = response.json()
-    if now_playing == {}:
+    if not now_playing or now_playing == {}:
         return None
     if not now_playing["item"]:
         return None
     if now_playing["item"]["is_local"]:
         return None
+
     item = now_playing["item"]
     return {
+        "is_playing": True,
         "title": item["name"],
         "artist": item["artists"][0]["name"],
         "image_url": item["album"]["images"][1]["url"],
@@ -53,21 +58,26 @@ def getNowPlayingSong() -> dict | None:
     }
 
 
-def getRecentSong() -> dict | None:
+def getRecentTrack() -> dict | None:
     response = requests.get(
         RECENTLY_PLAYING_URL,
         headers={"Authorization": f"Bearer {refreshToken()}"},
     )
-    if response.status_code == 204:
+
+    if not response:
+        return None
+    if response.status_code != 200:
         return None
     recent_tracks = response.json()["items"]
     if not recent_tracks:
         return None
     if recent_tracks == {}:
         return None
+
     recent_tracks = [item for item in recent_tracks if not item["track"]["is_local"]]
     item = random.choice(recent_tracks)["track"]
     return {
+        "is_playing": False,
         "title": item["name"],
         "artist": item["artists"][0]["name"],
         "image_url": item["album"]["images"][1]["url"],

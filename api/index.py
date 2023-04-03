@@ -1,7 +1,8 @@
 from flask import Flask, Response
 
-from src.get_data import getNowPlayingSong, getRecentSong
-from src.create_widget import create_svg
+from util.get_data import getCurrentTrack, getRecentTrack
+from util.create_svg import create_svg
+
 
 app = Flask(__name__)
 
@@ -10,15 +11,13 @@ app = Flask(__name__)
 @app.route("/<path:path>")
 def catch_all(path):
     # retreive data from spotify
-    song = getNowPlayingSong()
-    if not song:
-        song = getRecentSong()
+    track = getCurrentTrack()
+    if not track:
+        track = getRecentTrack()
 
     # generate svg
-    if song:
-        svg = create_svg(song)
-    else:
-        svg = "No data found"
+    svg = create_svg(track)
+
     # return response
     return Response(
         svg,

@@ -3,26 +3,41 @@ import requests
 from base64 import b64encode
 from flask import render_template
 
-from src.util import B64_image
+from .util import B64_image
 
 
-def create_svg(song: dict):
-    if song["is_playing"]:
-        current_status = "🎧  Vibing to"
+def create_svg(track: dict | None):
+    if not track:
+        html_data_dict = {
+            "status": "No songs found",
+            "image": B64_image(
+                "https://img.freepik.com/free-icon/browser_318-313458.jpg"
+            ),
+            "title": "404",
+            "artist": "Song Not Found",
+            "href": "https://open.spotify.com/",
+            "animated_bars": "",
+            "bar_layout": "",
+            "bar_CSS": "",
+        }
+        return render_template("spotify.html.j2", **html_data_dict)
+
+    if track["is_playing"]:
+        current_status = "🎧  Currently Listening To"
         # Create the animated bars
         bar_CSS, bar_layout, animated_bars = generate_bars()
     else:
-        current_status = "🎧  Recently vibed to"
+        current_status = "🎧  Recently Listened To"
         # get random track from recently played, filter away local tracks
         animated_bars, bar_layout, bar_CSS = "", "", ""
 
     # Data that is sent to html
     html_data_dict = {
         "status": current_status,
-        "image": B64_image(song["image_url"]),
-        "title": song["title"].replace("&", "&amp;"),
-        "artist": song["artist"].replace("&", "&amp;"),
-        "href": song["href"],
+        "image": B64_image(track["image_url"]),
+        "title": track["title"].replace("&", "&amp;"),
+        "artist": track["artist"].replace("&", "&amp;"),
+        "href": track["href"],
         "animated_bars": animated_bars,
         "bar_layout": bar_layout,
         "bar_CSS": bar_CSS,
