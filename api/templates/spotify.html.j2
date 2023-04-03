@@ -71,10 +71,11 @@
                     margin-top: 3px;
                     height: 57px;
                 }
-                                                                            /* Animated Bars */
+
+                /* Animated Bars */
 				/* highfrequencises */
                 .highBar {
-                    {{barLayout}}
+                    {{bar_layout}}
                     animation: highsound 0ms -800ms linear infinite alternate;
                 }
                 /* adjustment of animation at different points */
@@ -95,7 +96,7 @@
 
                 /* mediumfrequencises */
                 .mediumBar {
-                    {{barLayout}}
+                    {{bar_layout}}
                     animation: mediumsound 0ms -800ms linear infinite alternate;
                 }
                 @keyframes mediumsound {
@@ -123,7 +124,7 @@
 
                 /* Base */
                 .baseBar {
-                    {{barLayout}}
+                    {{bar_layout}}
                     animation: basesound 0ms -800ms linear infinite alternate;
                 }
                 @keyframes basesound {
@@ -148,19 +149,19 @@
                         opacity: 0.55;
                     }
                 }
-                {{barCSS|safe}}
+                {{bar_CSS|safe}}
             </style>
 
             <div class="main">
 	            <div class="currentStatus">{{status}}</div>
 	            <div class="songcontainer">
-	                <a class="art" href="{{trackLink}}" target="_blank">
+	                <a class="art" href="{{href}}" target="_blank">
 	                    <img title="Go to album" src="data:image/png;base64, {{image}}" class="cover" />
 	                </a>
 	                <div class="content">
-	                    <div class="song">{{songName}}</div>
-	                    <div class="artist">{{artistName}}</div>
-	                    <div id="bars">{{animatedBars|safe}}</div>
+	                    <div class="song">{{title}}</div>
+	                    <div class="artist">{{artist}}</div>
+	                    <div id="bars">{{animated_bars|safe}}</div>
 	                </div>
 	            </div>
             </div>
