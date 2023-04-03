@@ -30,21 +30,22 @@ def refreshToken():
     return response.json()["access_token"]
 
 
-def getNowPlayingSong() -> dict:
+def getNowPlayingSong() -> dict | None:
     response = requests.get(
-        NOW_PLAYING_URL, headers={"Authorization": f"Bearer {refreshToken()}"}
+        NOW_PLAYING_URL,
+        headers={"Authorization": f"Bearer {refreshToken()}"},
     )
     if response.status_code == 204:
-        return {}
+        return None
     now_playing = response.json()
-    is_playing = (
-        now_playing != {}
-        and now_playing["item"] != "None"
-        and (now_playing["item"]["is_local"] is False)
-    )
+    if now_playing == {}:
+        return None
+    if not now_playing["item"]:
+        return None
+    if now_playing["item"]["is_local"]:
+        return None
     item = now_playing["item"]
     return {
-        "is_playing": is_playing,
         "title": item["name"],
         "artist": item["artists"][0]["name"],
         "image_url": item["album"]["images"][1]["url"],
@@ -52,20 +53,21 @@ def getNowPlayingSong() -> dict:
     }
 
 
-def getRecentSong() -> dict:
+def getRecentSong() -> dict | None:
     response = requests.get(
-        RECENTLY_PLAYING_URL, headers={"Authorization": f"Bearer {refreshToken()}"}
+        RECENTLY_PLAYING_URL,
+        headers={"Authorization": f"Bearer {refreshToken()}"},
     )
     if response.status_code == 204:
-        return {}
-    recent_plays = [
-        item
-        for item in response.json()["items"]
-        if item["track"]["is_local"] is not True
-    ]
-    item = random.choice(recent_plays)["track"]
+        return None
+    recent_tracks = response.json()["items"]
+    if not recent_tracks:
+        return None
+    if recent_tracks == {}:
+        return None
+    recent_tracks = [item for item in recent_tracks if not item["track"]["is_local"]]
+    item = random.choice(recent_tracks)["track"]
     return {
-        "is_playing": False,
         "title": item["name"],
         "artist": item["artists"][0]["name"],
         "image_url": item["album"]["images"][1]["url"],

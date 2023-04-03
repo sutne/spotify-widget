@@ -15,6 +15,15 @@
     width: min(100%, 400px);
   }
 
+  .content {
+    text-align: left;
+  }
+
+  .demo {
+    width: 100%;
+    text-align: center;
+  }
+
   h1 {
     font-size: 2rem;
   }
@@ -36,10 +45,12 @@
 
 <body>
   <h1>Endpoints</h1>
-  <p>
-    <a herf="spotify-widget-sutne.vercel.app/api">/api</a><span> - Widget SVG </span>
-  </p>
-  <img src="https://spotify-widget-sutne.vercel.app/api" alt="spotify-widget" />
+  <div class="content">
+    <p>SVG Widget: <a href="/api">/api</a></p>
+  </div>
+  <div class="demo">
+    <img src="https://spotify-widget-sutne.vercel.app/api" alt="spotify-widget" />
+  </div>
 </body>
 
 </html>

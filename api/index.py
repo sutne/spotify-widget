@@ -10,14 +10,15 @@ app = Flask(__name__)
 @app.route("/<path:path>")
 def catch_all(path):
     # retreive data from spotify
-    nowPlayingSong = getNowPlayingSong()
-    recentSong = getRecentSong()
-    if nowPlayingSong["is_playing"]:
-        song = nowPlayingSong
-    else:
-        song = recentSong
+    song = getNowPlayingSong()
+    if not song:
+        song = getRecentSong()
+
     # generate svg
-    svg = create_svg(song)
+    if song:
+        svg = create_svg(song)
+    else:
+        svg = "No data found"
     # return response
     return Response(
         svg,
