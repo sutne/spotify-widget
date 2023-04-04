@@ -1,36 +1,12 @@
-from flask import Flask, Response
-
-
-app = Flask(__name__)
-
-
-@app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
-def catch_all(path):
-
-    # retreive data from spotify
-    track = get_current_track()
-    if not track:
-        track = get_recent_track()
-
-    # generate svg
-    svg = create_svg(track)
-
-    # return response
-    return Response(
-        svg,
-        mimetype="image/svg+xml",
-        headers={"Cache-Control": "s-maxage=1"},
-    )
+from flask import Flask, Response, render_template
+from dotenv import load_dotenv, find_dotenv
+from base64 import b64encode
+import requests
+import random
+import os
 
 
 ###################################################################### data
-
-import os
-import requests
-import random
-from dotenv import load_dotenv, find_dotenv
-
 load_dotenv(find_dotenv())
 SPOTIFY_CLIENT_ID = os.environ.get("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.environ.get("SPOTIFY_CLIENT_SECRET")
@@ -43,38 +19,47 @@ RECENTLY_PLAYING_URL = "https://api.spotify.com/v1/me/player/recently-played?lim
 
 def get_token():
     AUTHORIZATION = B64_string(f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}")
-    response = requests.post(
-        REFRESH_TOKEN_URL,
-        headers={
-            "Authorization": f"Basic {AUTHORIZATION}",
-        },
-        data={
-            "grant_type": "refresh_token",
-            "refresh_token": SPOTIFY_REFRESH_TOKEN,
-        },
-    )
-    return response.json()["access_token"]
+    try:
+        response = requests.post(
+            REFRESH_TOKEN_URL,
+            headers={
+                "Authorization": f"Basic {AUTHORIZATION}",
+            },
+            data={
+                "grant_type": "refresh_token",
+                "refresh_token": SPOTIFY_REFRESH_TOKEN,
+            },
+        ).json()
+    except Exception as e:
+        print(e)
+        return ""
+    return response["access_token"]
 
 
 def get_current_track() -> dict | None:
-    result = requests.get(
-        NOW_PLAYING_URL,
-        headers={"Authorization": f"Bearer {get_token()}"},
-    )
+    try:
+        result = requests.get(
+            NOW_PLAYING_URL,
+            headers={"Authorization": f"Bearer {get_token()}"},
+        )
 
-    if not result:
-        return None
-    if result.status_code != 200:
-        return None
-    response = result.json()
-    if not response or response == {}:
-        return None
-    if not response["item"]:
-        return None
-    if response["item"]["is_local"]:
+        if not result:
+            return None
+        if result.status_code != 200:
+            return None
+        response = result.json()
+        if not response or response == {}:
+            return None
+        if not response["item"]:
+            return None
+        if response["item"]["is_local"]:
+            return None
+
+        track = response["item"]
+    except Exception as e:
+        print(e)
         return None
 
-    track = response["item"]
     return {
         "is_playing": True,
         "title": track["name"],
@@ -85,23 +70,28 @@ def get_current_track() -> dict | None:
 
 
 def get_recent_track() -> dict | None:
-    result = requests.get(
-        RECENTLY_PLAYING_URL,
-        headers={"Authorization": f"Bearer {get_token()}"},
-    )
+    try:
+        result = requests.get(
+            RECENTLY_PLAYING_URL,
+            headers={"Authorization": f"Bearer {get_token()}"},
+        )
 
-    if not result:
-        return None
-    if result.status_code != 200:
-        return None
-    response = result.json()
-    if not response or response == {}:
-        return None
-    if not response["items"]:
+        if not result:
+            return None
+        if result.status_code != 200:
+            return None
+        response = result.json()
+        if not response or response == {}:
+            return None
+        if not response["items"]:
+            return None
+
+        items = [item for item in response["items"] if not item["track"]["is_local"]]
+        track = random.choice(items)["track"]
+    except Exception as e:
+        print(e)
         return None
 
-    items = [item for item in response["items"] if not item["track"]["is_local"]]
-    track = random.choice(items)["track"]
     return {
         "is_playing": False,
         "title": track["name"],
@@ -112,10 +102,6 @@ def get_recent_track() -> dict | None:
 
 
 ###################################################################### svg
-import random
-from flask import render_template
-
-
 def create_svg(track: dict | None):
     if not track:
         svg_data_dict = {
@@ -218,13 +204,33 @@ def add_single_bar(
 
 
 ###################################################################### util
-from base64 import b64encode
-import requests
-
-
 def B64_image(url: str):
     return b64encode(requests.get(url).content).decode("ascii")
 
 
 def B64_string(str: str):
     return b64encode(str.encode("ascii")).decode("ascii")
+
+
+###################################################################### Endpoints
+app = Flask(__name__)
+
+# since file is called widget.py path for this function /api/widget
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def catch_all(path):
+
+    # retreive data from spotify
+    track = get_current_track()
+    if not track:
+        track = get_recent_track()
+
+    # generate svg
+    svg = create_svg(track)
+
+    # return response
+    return Response(
+        svg,
+        mimetype="image/svg+xml",
+        headers={"Cache-Control": "s-maxage=1"},
+    )
