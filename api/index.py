@@ -1,7 +1,7 @@
 from flask import Flask, Response
 
-from util.get_data import getCurrentTrack, getRecentTrack
-from util.create_svg import create_svg
+from src.get_data import getCurrentTrack, getRecentTrack
+from src.create_svg import create_svg
 
 
 app = Flask(__name__)

@@ -15,7 +15,7 @@ NOW_PLAYING_URL = "https://api.spotify.com/v1/me/player/currently-playing"
 RECENTLY_PLAYING_URL = "https://api.spotify.com/v1/me/player/recently-played?limit=10"
 
 
-def refreshToken():
+def getToken():
     AUTHORIZATION = B64_string(f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}")
     response = requests.post(
         REFRESH_TOKEN_URL,
@@ -31,55 +31,55 @@ def refreshToken():
 
 
 def getCurrentTrack() -> dict | None:
-    response = requests.get(
+    result = requests.get(
         NOW_PLAYING_URL,
-        headers={"Authorization": f"Bearer {refreshToken()}"},
+        headers={"Authorization": f"Bearer {getToken()}"},
     )
 
-    if not response:
+    if not result:
         return None
-    if response.status_code != 200:
+    if result.status_code != 200:
         return None
-    now_playing = response.json()
-    if not now_playing or now_playing == {}:
+    response = result.json()
+    if not response or response == {}:
         return None
-    if not now_playing["item"]:
+    if not response["item"]:
         return None
-    if now_playing["item"]["is_local"]:
+    if response["item"]["is_local"]:
         return None
 
-    item = now_playing["item"]
+    track = response["item"]
     return {
         "is_playing": True,
-        "title": item["name"],
-        "artist": item["artists"][0]["name"],
-        "image_url": item["album"]["images"][1]["url"],
-        "href": item["external_urls"]["spotify"],
+        "title": track["name"],
+        "artist": ", ".join([artist["name"] for artist in track["artists"]]),
+        "image_url": track["album"]["images"][1]["url"],
+        "href": track["external_urls"]["spotify"],
     }
 
 
 def getRecentTrack() -> dict | None:
-    response = requests.get(
+    result = requests.get(
         RECENTLY_PLAYING_URL,
-        headers={"Authorization": f"Bearer {refreshToken()}"},
+        headers={"Authorization": f"Bearer {getToken()}"},
     )
 
-    if not response:
+    if not result:
         return None
-    if response.status_code != 200:
+    if result.status_code != 200:
         return None
-    recent_tracks = response.json()["items"]
-    if not recent_tracks:
+    response = result.json()
+    if not response or response == {}:
         return None
-    if recent_tracks == {}:
+    if not response["items"]:
         return None
 
-    recent_tracks = [item for item in recent_tracks if not item["track"]["is_local"]]
-    item = random.choice(recent_tracks)["track"]
+    items = [item for item in response["items"] if not item["track"]["is_local"]]
+    track = random.choice(items)["track"]
     return {
         "is_playing": False,
-        "title": item["name"],
-        "artist": item["artists"][0]["name"],
-        "image_url": item["album"]["images"][1]["url"],
-        "href": item["external_urls"]["spotify"],
+        "title": track["name"],
+        "artist": ", ".join([artist["name"] for artist in track["artists"]]),
+        "image_url": track["album"]["images"][1]["url"],
+        "href": track["external_urls"]["spotify"],
     }
