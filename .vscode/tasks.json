@@ -1,0 +1,40 @@
+{
+    // More info: https://code.visualstudio.com/docs/editor/tasks
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Develop",
+            "icon": {
+                "id": "debug",
+                "color": "terminal.ansiBlue"
+            },
+            "type": "shell",
+            "command": "vercel dev",
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "always",
+                "showReuseMessage": false,
+                "focus": false,
+                "clear": true,
+                "echo": true
+            }
+        },
+        {
+            "label": "Deploy",
+            "icon": {
+                "id": "cloud-upload",
+                "color": "terminal.ansiGreen"
+            },
+            "type": "shell",
+            "command": "vercel --prod",
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "always",
+                "showReuseMessage": false,
+                "focus": false,
+                "clear": true,
+                "echo": true
+            }
+        }
+    ]
+}
